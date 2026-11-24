@@ -25,7 +25,7 @@
 - Drift 十张表已实现并完成代码生成，`schemaVersion = 1`，外键约束、种子数据幂等；数据库显式使用应用支持目录并先建目录（修复 Windows 上默认路径 disk I/O 错误；Android 路径与 drift_flutter 默认一致，无数据迁移影响）。
 - 日期计算服务、美瞳业务规则、护理液事务、通知调度、updater 模块均已实现；通知服务含 Windows 分支（无运行时权限弹窗，初始化即视为可用）。
 - 61 个测试通过；`flutter analyze` 无问题；Windows debug 构建通过且经实机启动 + 截屏验证（曾借此发现并修复 go_router rootNavigatorKey 断言错误）；Android debug 与 release APK 构建通过。
-- iOS 工程代码就绪（含 Info.plist 权限说明），但 Windows 环境无法编译 iOS 安装包，需 macOS 执行 `flutter build ipa`；iOS 更新引导至 App Store / TestFlight。
+- iOS：Windows 无法本地编译；已通过 `.github/workflows/ios-build.yml`（GitHub Actions macOS runner）云端编译未签名 IPA 并上传为 Actions 产物（2026-11-25 已验证成功）。侧载或分发需 Apple 证书签名 / TestFlight；iOS 更新引导至 App Store / TestFlight。
 - 更新模块 owner / repo / 镜像白名单 / iOS 分发渠道仍为占位配置（`lib/features/updater/github_config.dart`），README 列有清单。
 
 ### 1.2 已确定的产品方向

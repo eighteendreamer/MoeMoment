@@ -93,7 +93,7 @@ lib/
 
 - **Windows 桌面**：✅ 已构建并通过实机启动验证（窗口渲染、首页四区块、底部双 Tab、响应式居中布局、SQLite 数据落盘均正常）。`flutter run -d windows` 或直接运行 `build\windows\x64\runner\Debug\moe_moment.exe`。
 - **Android**：✅ release APK 已构建（debug 签名，可直接安装体验）；正式发布前需配置 release 签名。真机运行时行为（通知送达、相册选择）需真机验证。
-- **iOS**：工程与代码就绪（Info.plist 已配置相册 / 相机用途说明），但 **Windows 无法编译 iOS 安装包**——iOS 打包必须在 macOS + Xcode 上执行 `flutter build ipa`。更新功能按平台约束引导至 App Store / TestFlight。
+- **iOS**：✅ 通过 GitHub Actions（macOS runner）云端编译产出**未签名 IPA**（`.github/workflows/ios-build.yml`，push 到 main 或手动触发）。未签名 IPA 需经 Sideloadly / AltStore 侧载，或用 Apple 开发者证书签名 / 提交 TestFlight 后才能安装到设备。Windows 本机无法编译 iOS。
 
 ### 产物位置
 
@@ -101,7 +101,7 @@ lib/
 |---|---|---|
 | Windows | `flutter build windows` | `build\windows\x64\runner\Release\moe_moment.exe`（整目录分发） |
 | Android | `flutter build apk --release` | `build\app\outputs\flutter-apk\app-release.apk` |
-| iOS | `flutter build ipa`（需 macOS） | `build\ios\ipa\*.ipa` |
+| iOS | push 到 main 或手动触发 GitHub Actions | Actions 产物 `moe-moment-ios-unsigned`（未签名 IPA） |
 
 ### 质量验证
 
