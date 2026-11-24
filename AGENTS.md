@@ -18,14 +18,15 @@
 
 ### 1.1 当前仓库状态
 
-编写本规则时，仓库处于需求准备阶段：
+2026-11-24 工程已落地，以下为当前事实（后续以实际文件为准，继续同步修订本节）：
 
-- 已有 `meitong_app_development_prompt.md`，定义页面、数据、提醒、更新及验收要求。
-- 尚无 `pubspec.yaml`、Flutter 源码、数据库实现和测试工程。
-- 需求中提到四屏高保真原型，但当前仓库未提供对应图片；不能声称已经查看或对照验收。
-- Flutter、Dart、ForUI、Drift 的版本，状态管理、路由、通知插件及目标平台配置尚未确定。
-
-以上是初始状态说明。后续以实际文件为准；工程落地后同步修订本节，不把过时描述继续当作事实。
+- Flutter 3.47.3 stable / Dart 3.13.3；ForUI 0.27.7、Drift 2.35.4、go_router 18.1.4、provider 6.1.5、flutter_local_notifications 23.0.4（含 Windows 实现）。
+- Flutter 工程已初始化（**Windows + Android + iOS** 三平台），Feature-first 结构按 1.3 落地。
+- Drift 十张表已实现并完成代码生成，`schemaVersion = 1`，外键约束、种子数据幂等；数据库显式使用应用支持目录并先建目录（修复 Windows 上默认路径 disk I/O 错误；Android 路径与 drift_flutter 默认一致，无数据迁移影响）。
+- 日期计算服务、美瞳业务规则、护理液事务、通知调度、updater 模块均已实现；通知服务含 Windows 分支（无运行时权限弹窗，初始化即视为可用）。
+- 61 个测试通过；`flutter analyze` 无问题；Windows debug 构建通过且经实机启动 + 截屏验证（曾借此发现并修复 go_router rootNavigatorKey 断言错误）；Android debug 与 release APK 构建通过。
+- iOS 工程代码就绪（含 Info.plist 权限说明），但 Windows 环境无法编译 iOS 安装包，需 macOS 执行 `flutter build ipa`；iOS 更新引导至 App Store / TestFlight。
+- 更新模块 owner / repo / 镜像白名单 / iOS 分发渠道仍为占位配置（`lib/features/updater/github_config.dart`），README 列有清单。
 
 ### 1.2 已确定的产品方向
 
@@ -34,7 +35,7 @@
 - 底部主导航只有“首页”和“我的”；详情、编辑、到期列表、提醒及更新设置使用二级页面。
 - 核心能力包括美瞳管理、自定义周期、多图片、护理液管理、三类提醒、本地通知和平台适配的更新流程。
 - UI 使用统一的淡粉色、简洁柔和的视觉体系；有原型时以原型为主要视觉依据。
-- Android、iOS 等平台支持范围以实际工程配置和用户要求为准，不把规划描述当作已验证支持。
+- **平台支持范围（用户 2026-11-24 明确）：支持 Windows 桌面 + Android + iOS，响应式布局。** 开发顺序为「先 Windows 桌面验证，再产 Android APK 安装包」；iOS 安装包只能在 macOS 编译（Windows 无法产出），Android 真机验证以模拟器或连接设备为准。
 
 ### 1.3 工程目录边界
 
