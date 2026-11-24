@@ -37,7 +37,7 @@ jobs:
           cp -R build/ios/iphoneos/Runner.app build/ios/Payload/
           cd build/ios
           zip -qry ../moe_moment-ios-unsigned.ipa Payload
-          ls -lh moe_moment-ios-unsigned.ipa
+          ls -lh ../moe_moment-ios-unsigned.ipa
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
