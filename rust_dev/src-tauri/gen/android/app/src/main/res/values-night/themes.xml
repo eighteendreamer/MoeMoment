@@ -1,0 +1,10 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- MoeMoment 始终使用浅色粉色主题：固定 Light 父主题，避免系统深色模式把背景刷黑 -->
+    <style name="Theme.moemoment" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/mm_background</item>
+        <item name="android:statusBarColor">@color/mm_background</item>
+        <item name="android:navigationBarColor">@color/mm_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

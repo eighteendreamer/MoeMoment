@@ -1,0 +1,48 @@
+[package]
+name = "moemoment"
+version = "0.1.0"
+description = "MoeMoment 美瞳管理（Tauri + React + SeaORM）"
+authors = ["MoeMoment"]
+license = ""
+repository = ""
+edition = "2024"
+rust-version = "1.90"
+
+[lib]
+name = "moemoment_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7.6", features = [] }
+
+[dependencies]
+tauri = { version = "2.12.7", features = ["protocol-asset"] }
+tauri-plugin-log = "2"
+tauri-plugin-notification = "2"
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+log = "0.4"
+thiserror = "2"
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+tokio = { version = "1", features = ["time", "sync", "macros", "rt-multi-thread"] }
+futures-util = "0.3"
+base64 = "0.22"
+sha2 = "0.10"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+
+sea-orm = { version = "2.0", features = [
+  "sqlx-sqlite",
+  "runtime-tokio-rustls",
+  "macros",
+  "with-chrono",
+  "with-json",
+] }
+sea-orm-migration = { version = "2.0", features = ["sqlx-sqlite", "runtime-tokio-rustls"] }
+async-trait = "0.1"
+
+[target.'cfg(windows)'.dependencies]
+# Windows 原生 Toast：开发运行时也能显示本应用的图标与名称
+tauri-winrt-notification = "0.8"
+winreg = "0.56"

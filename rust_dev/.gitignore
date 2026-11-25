@@ -1,0 +1,42 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# 开发期截图与调试产物
+.screenshots
+
+# 图标生成的中间产物（正式图标已复制到 src-tauri/icons 与 gen/android）
+icons-new
+.icon-work
+
+# Android 构建产物
+src-tauri/gen/android/app/build
+src-tauri/gen/android/.gradle
+src-tauri/gen/android/local.properties
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# npx tauri icon 的临时输出（图标已复制到 src-tauri/icons）
+.icons-out
+
+# 签名私钥：绝不进仓库，丢了就无法给已装用户发升级
+keystores
