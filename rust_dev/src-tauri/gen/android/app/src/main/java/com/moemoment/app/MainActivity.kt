@@ -18,7 +18,9 @@ class MainActivity : TauriActivity() {
       val bars = insets.getInsets(
         WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
       )
-      view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+      // 键盘（IME）弹出时让出输入法的高度，否则键盘会盖住页面底部正在编辑的输入框
+      val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+      view.setPadding(bars.left, bars.top, bars.right, maxOf(bars.bottom, ime.bottom))
       WindowInsetsCompat.CONSUMED
     }
   }

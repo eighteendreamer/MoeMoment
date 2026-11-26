@@ -77,6 +77,7 @@ function WheelColumn({
       ref={ref}
       role="listbox"
       aria-label={ariaLabel}
+      data-native-scroll="true"
       onScroll={handleScroll}
       onTouchStart={() => {
         touching.current = true

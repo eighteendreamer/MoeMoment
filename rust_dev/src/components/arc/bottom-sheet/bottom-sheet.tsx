@@ -237,8 +237,14 @@ function Sheet({ title, description, detents = [.45, .92], initialDetent = 0, on
       if (gesture.mode === "pending") {
         const expanded = detentRef.current === top;
         if (expanded) {
+          // 内容里可能有自己滚动的子区域（如滚轮选择器）：手指落在上面时交给原生滚动，
+          // 否则弹层会把纵向触摸判定为拖拽并 preventDefault，子区域永远滚不动
+          const target = event.target as HTMLElement | null;
+          const nested = target?.closest<HTMLElement>("[data-native-scroll]");
+          const nestedScrollable = !!nested && nested.scrollHeight > nested.clientHeight + 1;
           const scrollable = body.scrollHeight > body.clientHeight + 1;
-          gesture.mode = Math.abs(dy) >= Math.abs(dx) && (!scrollable || (body.scrollTop <= 0 && dy > 0)) ? "sheet" : "native";
+          gesture.mode = Math.abs(dy) >= Math.abs(dx) && nestedScrollable ? "native"
+            : Math.abs(dy) >= Math.abs(dx) && (!scrollable || (body.scrollTop <= 0 && dy > 0)) ? "sheet" : "native";
         } else {
           if (Math.hypot(dx, dy) < 4) return;
           gesture.mode = Math.abs(dy) >= Math.abs(dx) ? "sheet" : "native";

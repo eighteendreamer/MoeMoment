@@ -1674,6 +1674,8 @@ select {
   scroll-snap-type: y mandatory;
   overscroll-behavior: contain;
   scrollbar-width: none;
+  /* 允许纵向原生滚动（BottomSheet 手势判定会检查此属性） */
+  touch-action: pan-y;
 }
 
 .wheel-col::-webkit-scrollbar {
