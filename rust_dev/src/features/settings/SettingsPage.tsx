@@ -3,6 +3,7 @@ import {
   Bell,
   ChevronRight,
   CloudDownload,
+  DatabaseBackup,
   Droplets,
   GitBranch,
   Info,
@@ -125,6 +126,16 @@ export function SettingsPage() {
             <span>自动更新</span>
             <span className="value">
               {settings?.autoUpdateEnabled ? '已开启' : '已关闭'}
+              <ChevronRight size={15} />
+            </span>
+          </button>
+          <button className="settings-row" onClick={() => push({ name: 'data' })}>
+            <span className="lead">
+              <DatabaseBackup size={16} strokeWidth={1.8} />
+            </span>
+            <span>数据管理</span>
+            <span className="value">
+              导出 / 导入
               <ChevronRight size={15} />
             </span>
           </button>

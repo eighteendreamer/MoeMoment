@@ -104,6 +104,15 @@ export function UpdatePage() {
       }
       const downloaded = await api.downloadUpdate(info.asset.url, info.asset.name, expected)
       setResult(downloaded)
+
+      // Android：下载并校验完成后直接拉起系统安装器
+      if (downloaded.verified || expected === null) {
+        try {
+          await api.installApk(downloaded.path)
+        } catch {
+          setError('无法自动打开安装包，请到系统通知或文件中手动安装')
+        }
+      }
     } catch (err) {
       setError((err as Error).message)
     } finally {

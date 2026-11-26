@@ -1,6 +1,6 @@
 //! 设置、通知、更新、图片与应用信息相关命令。
 
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 
 use crate::AppState;
 use crate::dto::{
@@ -9,7 +9,7 @@ use crate::dto::{
 };
 use crate::error::{AppError, AppResult};
 use crate::services::updater::{self, UpdaterConfig};
-use crate::services::{media, notification, settings};
+use crate::services::{backup, media, notification, settings};
 
 #[tauri::command]
 pub async fn app_info(app: AppHandle, state: State<'_, AppState>) -> AppResult<AppInfoDto> {
@@ -136,6 +136,63 @@ pub async fn download_update(
         return Err(AppError::msg("只允许通过 HTTPS 下载更新包"));
     }
     updater::download(&app, &url, expected_sha256.as_deref(), &file_name).await
+}
+
+/// 导出全部数据为 zip，返回绝对路径。Android 由前端继续调分享面板选择去向。
+#[tauri::command]
+pub async fn export_backup(app: AppHandle, state: State<'_, AppState>) -> AppResult<String> {
+    let dir = app
+        .path()
+        .app_cache_dir()
+        .map_err(|err| AppError::msg(format!("无法定位缓存目录：{err}")))?
+        .join("export");
+    let path = backup::export_backup(&state.db, &dir).await?;
+    Ok(path.to_string_lossy().replace('\\', "/"))
+}
+
+/// 导入备份（覆盖现有数据，导入前自动备份）。数据以 base64 传入。
+#[tauri::command]
+pub async fn import_backup(
+    app: AppHandle,
+    state: State<'_, AppState>,
+    data_base64: String,
+) -> AppResult<serde_json::Value> {
+    use base64::Engine;
+    let dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|err| AppError::msg(format!("无法定位应用数据目录：{err}")))?
+        .join("backups");
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data_base64.trim())
+        .map_err(|err| AppError::msg(format!("备份数据解析失败：{err}")))?;
+    if bytes.is_empty() {
+        return Err(AppError::msg("备份内容为空"));
+    }
+    let summary = backup::import_backup(&state.db, &dir, &bytes).await?;
+    Ok(serde_json::json!({
+        "lenses": summary.lenses,
+        "images": summary.images,
+        "cycles": summary.cycles,
+        "careBottles": summary.care_bottles,
+        "autoBackup": summary.auto_backup,
+    }))
+}
+
+/// Android：把导出的备份文件交给系统分享面板（微信 / QQ / 保存到文件等）。
+#[tauri::command]
+pub async fn share_file(path: String, mime: Option<String>) -> AppResult<()> {
+    crate::services::reminder_mobile::share_file(&path, mime.as_deref().unwrap_or("application/zip"))
+        .map_err(|err| AppError::msg(err))
+        .map(|_| ())
+}
+
+/// Android：下载完成后拉起系统安装器。
+#[tauri::command]
+pub async fn install_apk(path: String) -> AppResult<()> {
+    crate::services::reminder_mobile::install_apk(&path)
+        .map_err(|err| AppError::msg(err))
+        .map(|_| ())
 }
 
 #[tauri::command]

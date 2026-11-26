@@ -9,8 +9,62 @@
     />
     <meta name="theme-color" content="#FFF7FA" />
     <title>MoeMoment 美瞳管理</title>
-  </head>
+      <style>
+      /* 启动屏：在 JS 加载前就渲染（纯 HTML/CSS，无阻塞）；
+         背景色与原生启动背景一致，衔接无跳变 */
+      #mm-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: #FFF7FA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+      }
+      #mm-splash img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      #mm-splash.mm-splash-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      /* 用户开启「减少动态效果」时不播放动画，只保留同色背景 */
+      @media (prefers-reduced-motion: reduce) {
+        #mm-splash img { visibility: hidden; }
+      }
+    </style>
+</head>
   <body>
+    <div id="mm-splash" aria-hidden="true">
+      <img src="/splash.gif" alt="" draggable="false" />
+    </div>
+    <script>
+      (function () {
+        var el = document.getElementById('mm-splash');
+        if (!el) return;
+        // 开屏广告逻辑：动画必须完整播完（约 3.3s，留 0.2s 余量），
+        // 且首页数据就绪，两个条件都满足才进入应用；数据慢时动画循环等待
+        var MIN_SPLASH_MS = 3500;
+        var dataReady = false;
+        var minDone = false;
+        var done = false;
+        var tryHide = function () {
+          if (done || !dataReady || !minDone) return;
+          done = true;
+          el.classList.add('mm-splash-out');
+          // 淡出后从 DOM 移除 —— GIF 停止解码，零持续开销
+          setTimeout(function () { el.remove(); }, 320);
+        };
+        // 首页数据就绪（无论成功失败）后由应用调用
+        window.__mmSplashReady = function () { dataReady = true; tryHide(); };
+        setTimeout(function () { minDone = true; tryHide(); }, MIN_SPLASH_MS);
+        // 兜底：即使前端崩溃也不能把用户挡在启动屏外
+        setTimeout(function () { dataReady = true; minDone = true; tryHide(); }, 8000);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -15,8 +15,8 @@ use crate::dto::{DownloadResultDto, UpdateAssetDto, UpdateInfoDto};
 use crate::error::{AppError, AppResult};
 
 /// GitHub 仓库占位配置：上线前必须填写（README 有清单）。
-pub const GITHUB_OWNER: &str = "YOUR_GITHUB_OWNER";
-pub const GITHUB_REPO: &str = "YOUR_GITHUB_REPO";
+pub const GITHUB_OWNER: &str = "eighteendreamer";
+pub const GITHUB_REPO: &str = "MoeMoment";
 
 /// 可信镜像白名单。留空表示未配置镜像，此时 mirror 模式会提示用户先配置。
 pub const MIRROR_BASES: &[&str] = &[];

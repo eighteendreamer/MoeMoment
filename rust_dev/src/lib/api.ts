@@ -89,6 +89,14 @@ export const api = {
   // 更新
   checkUpdate: () => call<UpdateInfo>('check_update'),
   fetchUpdateChecksum: (url: string) => call<string>('fetch_update_checksum', { url }),
+  installApk: (path: string) => call<void>('install_apk', { path }),
+  exportBackup: () => call<string>('export_backup'),
+  importBackup: (dataBase64: string) =>
+    call<{ lenses: number; images: number; cycles: number; careBottles: number; autoBackup: string | null }>(
+      'import_backup',
+      { dataBase64 },
+    ),
+  shareFile: (path: string, mime?: string) => call<void>('share_file', { path, mime }),
   downloadUpdate: (url: string, fileName: string, expectedSha256?: string | null) =>
     call<DownloadResult>('download_update', {
       url,

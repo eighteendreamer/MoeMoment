@@ -10,6 +10,7 @@ import { ReminderSettingsPage } from '@/features/settings/ReminderSettingsPage'
 import { CareSolutionPage } from '@/features/settings/CareSolutionPage'
 import { CyclePage } from '@/features/settings/CyclePage'
 import { UpdatePage } from '@/features/settings/UpdatePage'
+import { DataPage } from '@/features/settings/DataPage'
 
 function CurrentPage() {
   const { route } = useNav()
@@ -35,6 +36,8 @@ function CurrentPage() {
       return <CyclePage />
     case 'update':
       return <UpdatePage />
+    case 'data':
+      return <DataPage />
     default:
       return <HomePage />
   }

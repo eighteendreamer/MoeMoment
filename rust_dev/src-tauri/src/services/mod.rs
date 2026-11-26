@@ -1,5 +1,6 @@
 //! 业务服务层：数据库读写、事务与规则编排。命令层只做参数转换与调用。
 
+pub mod backup;
 pub mod care;
 pub mod cycle;
 pub mod lens;

@@ -9,3 +9,5 @@
 # 构建出的安装包
 *.apk
 /rust_dev/dist/
+# 发布校验文件（随构建变化，发布时上传）
+SHA256SUMS.txt

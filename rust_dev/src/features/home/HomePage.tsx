@@ -66,7 +66,11 @@ export function HomePage() {
         if (!cancelled) setError(err.message)
       })
       .finally(() => {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) {
+          setLoading(false)
+          // 启动动画播完（或数据先就绪）即收起启动屏
+          ;(window as unknown as { __mmSplashReady?: () => void }).__mmSplashReady?.()
+        }
       })
     return () => {
       cancelled = true

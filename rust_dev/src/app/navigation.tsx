@@ -27,6 +27,7 @@ export type Route =
   | { name: 'care' }
   | { name: 'cycles' }
   | { name: 'update' }
+  | { name: 'data' }
 
 interface NavValue {
   route: Route

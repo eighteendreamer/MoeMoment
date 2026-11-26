@@ -1,6 +1,9 @@
 package com.moemoment.app
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.core.content.FileProvider
 import app.tauri.annotation.Command
 import app.tauri.annotation.InvokeArg
 import app.tauri.annotation.TauriPlugin
@@ -18,6 +21,17 @@ class ScheduleArgs {
 @InvokeArg
 class CancelArgs {
     var id: Int = 0
+}
+
+@InvokeArg
+class InstallApkArgs {
+    var path: String? = null
+}
+
+@InvokeArg
+class ShareFileArgs {
+    var path: String? = null
+    var mime: String? = null
 }
 
 @InvokeArg
@@ -81,6 +95,67 @@ class ReminderPlugin(private val activity: Activity) : Plugin(activity) {
         val args = invoke.parseArgs(CancelArgs::class.java)
         ReminderStore.cancel(activity.applicationContext, args.id)
         invoke.resolve()
+    }
+
+    /**
+     * 拉起系统安装器安装已下载的 APK。
+     * Android 8+ 要求本应用持有「安装未知应用」授权，系统会自动引导用户去开。
+     */
+    @Command
+    fun installApk(invoke: Invoke) {
+        val args = invoke.parseArgs(InstallApkArgs::class.java)
+        val context = activity.applicationContext
+        try {
+            val raw = args.path ?: throw IllegalArgumentException("缺少 APK 路径")
+            val file = java.io.File(raw)
+            if (!file.exists() || file.length() == 0L) {
+                throw IllegalArgumentException("安装包不存在或为空：${file.name}")
+            }
+            val uri: Uri = if (android.os.Build.VERSION.SDK_INT >= 24) {
+                FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
+            } else {
+                Uri.fromFile(file)
+            }
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, "application/vnd.android.package-archive")
+                addFlags(
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        or Intent.FLAG_ACTIVITY_NEW_TASK
+                )
+            }
+            context.startActivity(intent)
+            invoke.resolve()
+        } catch (err: Exception) {
+            invoke.reject(err.message ?: "无法启动安装程序")
+        }
+    }
+
+    /** 把导出的备份文件交给系统分享面板（微信 / QQ / 保存到文件等）。 */
+    @Command
+    fun shareFile(invoke: Invoke) {
+        val args = invoke.parseArgs(ShareFileArgs::class.java)
+        val context = activity.applicationContext
+        try {
+            val raw = args.path ?: throw IllegalArgumentException("缺少文件路径")
+            val file = java.io.File(raw)
+            if (!file.exists()) {
+                throw IllegalArgumentException("文件不存在：${file.name}")
+            }
+            val uri: Uri = if (android.os.Build.VERSION.SDK_INT >= 24) {
+                FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
+            } else {
+                Uri.fromFile(file)
+            }
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = args.mime ?: "application/zip"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            context.startActivity(Intent.createChooser(intent, "分享备份文件"))
+            invoke.resolve()
+        } catch (err: Exception) {
+            invoke.reject(err.message ?: "无法打开分享面板")
+        }
     }
 
     @Command

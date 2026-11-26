@@ -86,6 +86,30 @@ mod android {
             .map(|_| ())
             .map_err(|err| err.to_string())
     }
+
+    /// 拉起系统安装器安装已下载的 APK。
+    pub fn install_apk(path: &str) -> Result<(), String> {
+        let handle = HANDLE.get().ok_or_else(|| "提醒插件未初始化".to_string())?;
+        handle
+            .run_mobile_plugin::<serde_json::Value>(
+                "installApk",
+                serde_json::json!({ "path": path }),
+            )
+            .map(|_| ())
+            .map_err(|err| err.to_string())
+    }
+
+    /// 把导出的备份文件交给系统分享面板。
+    pub fn share_file(path: &str, mime: &str) -> Result<(), String> {
+        let handle = HANDLE.get().ok_or_else(|| "提醒插件未初始化".to_string())?;
+        handle
+            .run_mobile_plugin::<serde_json::Value>(
+                "shareFile",
+                serde_json::json!({ "path": path, "mime": mime }),
+            )
+            .map(|_| ())
+            .map_err(|err| err.to_string())
+    }
 }
 
 #[cfg(not(target_os = "android"))]
@@ -112,6 +136,14 @@ mod android {
     pub fn notify(_id: i32, _title: &str, _body: &str) -> Result<(), String> {
         Ok(())
     }
+
+    pub fn install_apk(_path: &str) -> Result<(), String> {
+        Err("当前平台不支持应用内安装".to_string())
+    }
+
+    pub fn share_file(_path: &str, _mime: &str) -> Result<(), String> {
+        Err("当前平台不支持系统分享".to_string())
+    }
 }
 
 /// 当前平台是否具备系统级定时能力。
@@ -134,6 +166,16 @@ pub fn cancel_all() -> Result<(), String> {
 /// 立即通知：Android 复用同一个通知渠道与图标，保证前台/后台样式一致。
 pub fn notify(id: i32, title: &str, body: &str) -> Result<(), String> {
     android::notify(id, title, body)
+}
+
+/// 拉起系统安装器安装已下载的更新包。
+pub fn install_apk(path: &str) -> Result<(), String> {
+    android::install_apk(path)
+}
+
+/// 把导出的备份文件交给系统分享面板。
+pub fn share_file(path: &str, mime: &str) -> Result<(), String> {
+    android::share_file(path, mime)
 }
 
 /// 在 `Builder` 阶段注册插件（非 Android 平台返回 None，不加入插件链）。
